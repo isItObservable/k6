@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    metrics.dynatrace.com/path: /metrics
+    metrics.dynatrace.com/port: "5656"
+    metrics.dynatrace.com/scrape: "true"
+  name: k6metrics
+spec:
+  clusterIP: None
+  ports:
+    - name: metrics
+      port: 5656
+  selector:
+    app: k6

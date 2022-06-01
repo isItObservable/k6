@@ -1,0 +1,60 @@
+apiVersion: opentelemetry.io/v1alpha1
+kind: OpenTelemetryCollector
+metadata:
+  name: oteld
+spec:
+  mode: daemonset
+  hostNetwork: true
+  image: otel/opentelemetry-collector-contrib:0.48.0
+  config: |
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+          http:
+    processors:
+      batch:
+        send_batch_max_size: 1000
+        timeout: 30s
+        send_batch_size : 800
+      metricstransform:
+        transforms:
+           include: .+
+           match_type: regexp
+           action: update
+           operations:
+             - action: update_label
+               label: namespace
+               new_label: k8s.namespace.name
+             - action: add_label
+               new_label: dt.kubernetes.config.id
+               new_value: CLUSTER_ID_TOREPLACE
+             - action: update_label
+               label: uid
+               new_label: k8s.pod.uid
+             - action: update_label
+               label: system_uuid
+               new_label: dt.kubernetes.node.system_uuid
+    exporters:
+      logging:
+      otlphttp:
+        endpoint: "https://ENVIRONMENT_URL_TO_REPLACE/api/v2/otlp"
+        headers: {"Authorization": "Api-Token DT_API_TOKEN_TO_REPLACE"}
+      dynatrace:
+        # optional - Dimensions specified here will be included as a dimension on every exported metric
+        #            unless that metric already has a dimension with the same key.
+        # optional - prefix will be prepended to each metric name in prefix.name format
+        prefix: otpcol
+        endpoint: "https://ENVIRONMENT_URL_TO_REPLACE/api/v2/metrics/ingest"
+        # Token must at least have the Ingest metrics (metrics.ingest) permission
+        api_token: "DT_API_TOKEN_TO_REPLACE"
+    service:
+      pipelines:
+        traces:
+          receivers: [otlp]
+          processors: []
+          exporters: [logging,otlphttp]
+        metrics:
+          receivers: [otlp]
+          processors: [metricstransform,batch]
+          exporters: [logging,dynatrace]
