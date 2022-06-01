@@ -272,6 +272,7 @@ sed -i "s,CLUSTER_ID_TOREPLACE,$CLUSTERID," kubernetes-manifests/openTelemetry-m
 ```
 git clone https://github.com/grafana/k6-operator && cd k6-operator
 make deploy
+make install
 ```
 
 ### 8. Deploy the k6 test
