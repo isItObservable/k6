@@ -1,0 +1,23 @@
+apiVersion: k6.io/v1alpha1
+kind: K6
+metadata:
+  name: k6-component-test
+spec:
+  parallelism: 1
+  script:
+    configMap:
+      name: k6-test
+      file: archive.tar
+  arguments: --out output-dynatrace
+  ports:
+    - containerPort: 5656
+      name: metrics
+  runner:
+    image: hrexed/xk6-dynatrace-output:0.6
+    env:
+      - name: K6_DYNATRACE_URL
+        value: "https://TENANTURL_TOREPLACE"
+      - name: K6_DYNATRACE_APITOKEN
+        value: "DT_API_TOKEN_TO_REPLACE"
+      - name: OTLP_SERVICE_ADDR
+        value: "otel-collector.default.svc.cluster.local:4317"
