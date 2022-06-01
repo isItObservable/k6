@@ -1,7 +1,7 @@
 apiVersion: k6.io/v1alpha1
 kind: K6
 metadata:
-  name: k6-load-test
+  name: k6-load-test-distributed
 spec:
   parallelism: 2
   script:
@@ -16,6 +16,6 @@ spec:
     image:  hrexed/k6-prometheus-otlp:0.1
     env:
       - name: OTLP_SERVICE_ADDR
-        value: "otel-collector.default.svc.cluster.local:4317"
+        value: "oteld-collector.default.svc.cluster.local:4317"
       - name: K6_PROMETHEUS_REMOTE_URL
         value: "http://prometheus-kube-prometheus-prometheus.default.svc.cluster.local:9090/api/v1/write"

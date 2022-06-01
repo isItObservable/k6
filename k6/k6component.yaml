@@ -20,4 +20,4 @@ spec:
       - name: K6_DYNATRACE_APITOKEN
         value: "DT_API_TOKEN_TO_REPLACE"
       - name: OTLP_SERVICE_ADDR
-        value: "otel-collector.default.svc.cluster.local:4317"
+        value: "oteld-collector.default.svc.cluster.local:4317"
